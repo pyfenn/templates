@@ -2,7 +2,7 @@
 # Fenn Configuration (Modify Carefully)
 # ---------------------------------------
 
-project: notifier
+project: base
 
 # ---------------------------
 # Logging & Tracking
@@ -15,5 +15,5 @@ logger:
 # Example of User Section
 # ---------------------------------------
 
-training:
-  lr: 0.5
+train:
+    lr: 0.001
