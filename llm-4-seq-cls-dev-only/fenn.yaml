@@ -1,0 +1,25 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: llm-4-seq-cls
+
+# ---------------------------
+# Logging & Tracking
+# ---------------------------
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# Training Section
+# ---------------------------------------
+
+llm:
+  name:
+  dir:
+
+train:
+  device: cuda
+  epochs: 1
+  lr: 2e-5
