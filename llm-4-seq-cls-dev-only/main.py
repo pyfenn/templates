@@ -1,9 +1,10 @@
 import numpy as np
 import torch
 
-from fenn import FENN
-from fenn.transformers import LoRAConfig, SequenceClassifier
-app = FENN()
+from fenn import Fenn
+from fenn.nn.transformers.sequence_classifier import SequenceClassifier
+
+app = Fenn()
 
 @app.entrypoint
 def main(args):
@@ -68,9 +69,6 @@ def main(args):
     )
 
     print("pred(reloaded):", clf2.predict(X_test).tolist())
-
-if __name__ == "__main__":
-    main()
 
 if __name__ == "__main__":
     app.run()

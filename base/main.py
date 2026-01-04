@@ -1,6 +1,6 @@
-from fenn import FENN
+from fenn import Fenn
 
-app = FENN()
+app = Fenn()
 
 @app.entrypoint
 def main(args):
