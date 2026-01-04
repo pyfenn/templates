@@ -1,6 +1,6 @@
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.linear import Trainer
+from fenn.nn.trainers import Trainer
 
 import torch
 import torch.nn as nn
@@ -71,12 +71,11 @@ def main(args):
     grounds = []
 
     model.eval()
-
     with torch.no_grad():
         for data, labels in test_loader:
             data = data.to(device)
 
-            probs = model(data).squeeze()
+            probs = model(data)
             preds = torch.argmax(probs, axis=1)
 
             predictions.extend(preds.detach().cpu().tolist())

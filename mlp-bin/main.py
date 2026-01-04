@@ -1,6 +1,6 @@
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.linear import Trainer
+from fenn.nn.trainers import Trainer
 
 import torch
 import torch.nn as nn
