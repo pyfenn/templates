@@ -1,6 +1,6 @@
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.trainer import Trainer
+from fenn.nn.linear import Trainer
 
 import torch
 import torch.nn as nn
@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 from ucimlrepo import fetch_ucirepo
 
-from modules import BinaryDataset, CustomMLP
+from modules import BinaryDataset, BinaryMLP
 
 app = Fenn()
 
@@ -51,7 +51,7 @@ def main(args):
     train_loader = DataLoader(train_dataset, batch_size=args["train"]["batch"], shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=args["test"]["batch"], shuffle=False)
 
-    model = CustomMLP()
+    model = BinaryMLP()
     loss_fn = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(),
                             lr=float(args["train"]["lr"]))

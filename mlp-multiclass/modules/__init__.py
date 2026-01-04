@@ -1,2 +1,2 @@
 from .dataset import MultiClassDataset
-from .mlp import CustomMLP
+from .model import MultiClassMLP

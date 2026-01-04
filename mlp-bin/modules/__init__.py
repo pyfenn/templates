@@ -1,2 +1,2 @@
 from .dataset import BinaryDataset
-from .mlp import CustomMLP
+from .model import BinaryMLP

@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-class CustomMLP(nn.Module):
+class BinaryMLP(nn.Module):
 
     def __init__(self):
         super().__init__()
