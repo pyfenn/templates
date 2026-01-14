@@ -1,0 +1,31 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: cnn
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# User Section
+# ---------------------------------------
+general:
+  device: cuda
+
+model:
+  in_channels: 3
+  num_classes: 10
+
+train:
+  seed: 42
+  batch: 64
+  epochs: 5
+  lr: 1e-2
+
+test:
+  size: 0.2
+  batch: 64
+
+dataset:
+  dir: data

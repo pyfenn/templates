@@ -1,0 +1,4 @@
+fenn
+fenn[torch]
+torchvision
+scikit-learn
