@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-class CNN(nn.Module):
+class LeNet(nn.Module):
     """
     A simple CNN for image classification.
     Default architecture is designed for 32x32 RGB images (e.g., CIFAR-10).

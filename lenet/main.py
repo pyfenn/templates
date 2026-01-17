@@ -1,28 +1,16 @@
-try:
-    from torchvision import datasets, transforms
-except ImportError as e:
-    raise RuntimeError(
-        "Torchvision is required for this feature. "
-        "Install it yourself (GPU/CPU) or use 'pip install smle[torchvision]'."
-    ) from e
+from torchvision import datasets, transforms
 
-try:
-    import torch
-    import torch.nn as nn
-    import torch.optim as optim
-    from torch.utils.data import DataLoader
-
-except ImportError as e:
-    raise RuntimeError(
-        "Torch is required for this feature. "
-        "Install it yourself (GPU/CPU) or use 'pip install smle[torch]'."
-    ) from e
-
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
 
 from fenn import Fenn
 from fenn.utils import set_seed
 from fenn.nn.trainers import Trainer
-from modules import CNN
+
+from modules import LeNet
+
 from sklearn.metrics import accuracy_score
 
 app = Fenn()
@@ -40,14 +28,14 @@ def main(args):
         transforms.RandomHorizontalFlip(),
         transforms.RandomCrop(32, padding=4),
         transforms.ToTensor(),
-        transforms.Normalize(mean=(0.4914, 0.4822, 0.4465),
-                             std=(0.2470, 0.2435, 0.2616)),
+        transforms.Normalize(mean=(0.5, 0.5, 0.5),
+                             std=(0.5, 0.5, 0.5)),
     ])
 
     test_transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=(0.4914, 0.4822, 0.4465),
-                             std=(0.2470, 0.2435, 0.2616)),
+        transforms.Normalize(mean=(0.5, 0.5, 0.5),
+                             std=(0.5, 0.5, 0.5)),
     ])
 
     # ========================================
@@ -83,7 +71,7 @@ def main(args):
         pin_memory=True
     )
 
-    model = CNN(
+    model = LeNet(
         in_channels=args["model"]["in_channels"],
         num_classes=args["model"]["num_classes"]
     )

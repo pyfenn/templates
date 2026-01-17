@@ -20,8 +20,8 @@ model:
 train:
   seed: 42
   batch: 64
-  epochs: 5
-  lr: 1e-2
+  epochs: 30
+  lr: 1e-3
 
 test:
   size: 0.2
