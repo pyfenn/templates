@@ -1,5 +1,6 @@
 __pycache__/
 logger/
+dataset/
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
