@@ -2,7 +2,7 @@
 # Fenn Configuration (Modify Carefully)
 # ---------------------------------------
 
-project: lenet
+project: vgg
 
 logger:
   dir: logger
@@ -19,13 +19,13 @@ model:
 
 train:
   seed: 42
-  batch: 64
-  epochs: 30
+  batch: 32
+  epochs: 1
   lr: 1e-3
 
 test:
   size: 0.2
-  batch: 64
+  batch: 32
 
 dataset:
   dir: data
