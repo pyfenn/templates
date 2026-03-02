@@ -36,8 +36,11 @@ def main(args):
         "Iris-virginica": 2,
     }
     y = np.vectorize(label2id.get)(y).astype(np.int64)
+   
     # ========================================
-
+    
+    num_classes = np.unique(y).shape[0]
+    
     X_train, X_test, y_train, y_test = train_test_split(X,
                                                         y,
                                                         test_size=args["test"]["size"],
@@ -62,26 +65,28 @@ def main(args):
     trainer = Trainer(model=model,
                       loss_fn=loss_fn,
                       optim=optimizer,
+                      num_classes=num_classes,
                       epochs=args["train"]["epochs"],
                       device=device)
 
     model = trainer.fit(train_loader=train_loader)
-
-    predictions = []
-    grounds = []
-
-    model.eval()
-    with torch.no_grad():
-        for data, labels in test_loader:
-            data = data.to(device)
-
-            probs = model(data)
-            preds = torch.argmax(probs, axis=1)
-
-            predictions.extend(preds.detach().cpu().tolist())
-            grounds.extend(labels.detach().cpu().tolist())
-
-    print(f"Accuracy: {accuracy_score(grounds, predictions):.4f}")
+    predictions = trainer.predict(test_loader)
+    print(predictions)
+    print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
+    #predictions = []
+    #grounds = []
+#
+    #model.eval()
+    #with torch.no_grad():
+    #    for data, labels in test_loader:
+    #        data = data.to(device)
+#
+    #        probs = model(data)
+    #        preds = torch.argmax(probs, axis=1)
+#
+    #        predictions.extend(preds.detach().cpu().tolist())
+#
+    #print(f"Accuracy: {accuracy_score(grounds, predictions):.4f}")
 
 if __name__ == "__main__":
     app.run()

@@ -33,7 +33,10 @@ def main(args):
 
     # setosa = 1, others = 0
     y = (y == "Iris-setosa").astype(np.int64)
+    
     # ========================================
+    
+    num_classes = np.unique(y).shape[0]
 
     X_train, X_test, y_train, y_test = train_test_split(X,
                                                         y,
@@ -59,28 +62,16 @@ def main(args):
     trainer = Trainer(model=model,
                       loss_fn=loss_fn,
                       optim=optimizer,
+                      num_classes=num_classes,
                       epochs=args["train"]["epochs"],
                       device=device)
 
     model = trainer.fit(train_loader=train_loader)
-
-    predictions = []
-    grounds = []
+    predictions = trainer.predict(test_loader)
 
     model.eval()
 
-    with torch.no_grad():
-        for data, labels in test_loader:
-            data = data.to(device)
-
-            logits = model(data).squeeze(1)     # [B,1] -> [B]
-            probs  = torch.sigmoid(logits)      # [B] in [0,1]
-            preds  = (probs >= 0.5).long()      # [B] {0,1}
-
-            predictions.extend(preds.detach().cpu().tolist())
-            grounds.extend(labels.detach().cpu().tolist())
-
-    print(f"Accuracy: {accuracy_score(grounds, predictions):.4f}")
+    print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
 
 if __name__ == "__main__":
     app.run()
