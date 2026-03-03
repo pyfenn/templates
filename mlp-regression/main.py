@@ -101,8 +101,7 @@ def main(args):
 
     # Train with separate validation set
     model = trainer.fit(train_loader=train_loader,
-                       val_loader=val_loader,
-                       val_epoch=5)
+                       val_loader=val_loader)
 
     predictions = []
     grounds = []

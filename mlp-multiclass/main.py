@@ -84,10 +84,10 @@ def main(args):
                       device=device,
                       early_stopping_patience=2)
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=args["val"]["epoch"])
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader)
     predictions = trainer.predict(test_loader)
 
     print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
-    
+
 if __name__ == "__main__":
     app.run()

@@ -83,7 +83,7 @@ def main(args):
                       save_best=True,
                       early_stopping_patience=5)
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=5)
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader)
     predictions = trainer.predict(test_loader)
 
     model.eval()

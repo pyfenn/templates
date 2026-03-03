@@ -105,11 +105,10 @@ trainer = Trainer(
     early_stopping_patience=10
 )
 
-# For less frequent validation (every 10 epochs)
+# Validation is performed every epoch when a validation loader is provided
 trained_model = trainer.fit(
-    train_loader=train_loader,
-    val_loader=test_loader,
-    val_epoch=10  # Validate every 10 epochs instead of 5
+  train_loader=train_loader,
+  val_loader=test_loader,
 )
 
 # To disable early stopping

@@ -89,7 +89,7 @@ test:
 - Predictions use threshold of 0.5 for binary labels
 
 ### Validation & Early Stopping
-- Validates every 5 epochs on the test set during training
+- Validates every epoch on the test set during training
 - Automatically stops after 5 epochs without improvement (early stopping)
 - Saves the best model to `./checkpoints/checkpoint_best.pt`
 - During validation, computes: accuracy, precision, recall, F1-score
@@ -98,9 +98,8 @@ test:
 ```python
 # Train with validation on test set
 model = trainer.fit(
-    train_loader=train_loader,
-    val_loader=test_loader,  # Validation set
-    val_epoch=5              # Validate every 5 epochs
+  train_loader=train_loader,
+  val_loader=test_loader,  # Validation set
 )
 ```
 

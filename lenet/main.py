@@ -109,7 +109,7 @@ def main(args):
         early_stopping_patience=5
     )
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=5)
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader)
 
     # ========================================
     # Evaluation

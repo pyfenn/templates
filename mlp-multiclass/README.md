@@ -98,11 +98,10 @@ test:
 
 **Validation Process:**
 ```python
-# Train with validation on test set
+# Train with validation on test set (validation runs every epoch)
 model = trainer.fit(
-    train_loader=train_loader,
-    val_loader=test_loader,  # Validation set
-    val_epoch=5              # Validate every 5 epochs
+  train_loader=train_loader,
+  val_loader=test_loader,  # Validation set
 )
 ```
 
@@ -179,14 +178,13 @@ Adjust patience or validation frequency:
 
 ```python
 trainer = Trainer(
-    ...,
-    early_stopping_patience=10,  # Wait 10 epochs without improvement
+  ...,
+  early_stopping_patience=10,  # Wait 10 epochs without improvement
 )
 
 model = trainer.fit(
-    train_loader=train_loader,
-    val_loader=test_loader,
-    val_epoch=10  # Validate every 10 epochs instead of 5
+  train_loader=train_loader,
+  val_loader=test_loader,  # validation will be checked every epoch
 )
 ```
 

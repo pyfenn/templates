@@ -92,7 +92,7 @@ test:
 - Supports any numerical prediction problem
 
 ### Validation & Early Stopping
-- Validates every 5 epochs on the validation set during training
+- Validates every epoch on the validation set during training
 - Automatically stops after 5 epochs without improvement (early stopping)
 - Saves the best model to `./checkpoints/checkpoint_best.pt`
 - During validation, computes: MSE, MAE, R² score
@@ -101,9 +101,8 @@ test:
 ```python
 # Train with validation on separate set
 model = trainer.fit(
-    train_loader=train_loader,
-    val_loader=val_loader,  # Validation set
-    val_epoch=5              # Validate every 5 epochs
+  train_loader=train_loader,
+  val_loader=val_loader,  # Validation set
 )
 ```
 
@@ -191,9 +190,8 @@ trainer = Trainer(
 )
 
 model = trainer.fit(
-    train_loader=train_loader,
-    val_loader=val_loader,
-    val_epoch=10  # Validate every 10 epochs instead of 5
+  train_loader=train_loader,
+  val_loader=val_loader,  # validation occurs every epoch when provided
 )
 ```
 
