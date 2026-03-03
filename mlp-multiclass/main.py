@@ -41,21 +41,22 @@ def main(args):
 
     num_classes = np.unique(y).shape[0]
 
-    # First split: 70% train, 30% temp (val + test)
-    X_train, X_temp, y_train, y_temp = train_test_split(X,
-                                                        y,
-                                                        test_size=0.3,
-                                                        stratify=y,
-                                                        random_state=args["train"]["seed"])
+    X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=args["test"]["size"],
+            stratify=y,
+            random_state=args["train"]["seed"],
+        )
 
-    # Second split: split temp into 50% val, 50% test (15% each of original)
-    X_val, X_test, y_val, y_test = train_test_split(X_temp,
-                                                     y_temp,
-                                                     test_size=0.5,
-                                                     stratify=y_temp,
-                                                     random_state=args["train"]["seed"])
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train,
+        y_train,
+        test_size=args["val"]["size"],
+        stratify=y_train,
+        random_state=args["train"]["seed"],
+    )
 
-    # Normalize features using training statistics only
     standard_scaler = StandardScaler()
     X_train = standard_scaler.fit_transform(X_train)
     X_val = standard_scaler.transform(X_val)
@@ -66,10 +67,9 @@ def main(args):
     test_dataset = MultiClassDataset(X_test, y_test)
 
     train_loader = DataLoader(train_dataset, batch_size=args["train"]["batch"], shuffle=True)
-    # Validation loader (used during training for early stopping)
-    val_loader = DataLoader(val_dataset, batch_size=args["test"]["batch"], shuffle=False)
-    # Test loader (for final evaluation, never seen during training)
+    val_loader = DataLoader(val_dataset, batch_size=args["val"]["batch"], shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=args["test"]["batch"], shuffle=False)
+
 
     model = MultiClassMLP()
     loss_fn = nn.CrossEntropyLoss()
@@ -82,14 +82,12 @@ def main(args):
                       num_classes=num_classes,
                       epochs=args["train"]["epochs"],
                       device=device,
-                      checkpoint_dir="./checkpoints",
-                      save_best=True,
-                      early_stopping_patience=5)
+                      early_stopping_patience=2)
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=5)
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=args["val"]["epoch"])
     predictions = trainer.predict(test_loader)
-    print(predictions)
-    print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
 
+    print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
+    
 if __name__ == "__main__":
     app.run()
