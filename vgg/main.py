@@ -74,7 +74,7 @@ def main(args):
         shuffle=False,
         pin_memory=True
     )
-    
+
     model = VGG16(
         num_classes=args["model"]["num_classes"]
     )
@@ -113,4 +113,3 @@ def main(args):
 
 if __name__ == "__main__":
     app.run()
-    
