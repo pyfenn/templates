@@ -33,25 +33,39 @@ def main(args):
 
     # setosa = 1, others = 0
     y = (y == "Iris-setosa").astype(np.int64)
-    
+
     # ========================================
-    
+
     num_classes = np.unique(y).shape[0]
 
-    X_train, X_test, y_train, y_test = train_test_split(X,
+    # First split: 70% train, 30% temp (val + test)
+    X_train, X_temp, y_train, y_temp = train_test_split(X,
                                                         y,
-                                                        test_size=args["test"]["size"],
+                                                        test_size=0.3,
                                                         stratify=y,
                                                         random_state=args["train"]["seed"])
 
+    # Second split: split temp into 50% val, 50% test (15% each of original)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp,
+                                                     y_temp,
+                                                     test_size=0.5,
+                                                     stratify=y_temp,
+                                                     random_state=args["train"]["seed"])
+
+    # Normalize features using training statistics only
     standard_scaler = StandardScaler()
     X_train = standard_scaler.fit_transform(X_train)
+    X_val = standard_scaler.transform(X_val)
     X_test = standard_scaler.transform(X_test)
 
     train_dataset = BinaryDataset(X_train, y_train)
+    val_dataset = BinaryDataset(X_val, y_val)
     test_dataset = BinaryDataset(X_test, y_test)
 
     train_loader = DataLoader(train_dataset, batch_size=args["train"]["batch"], shuffle=True)
+    # Validation loader (used during training for early stopping)
+    val_loader = DataLoader(val_dataset, batch_size=args["test"]["batch"], shuffle=False)
+    # Test loader (for final evaluation, never seen during training)
     test_loader = DataLoader(test_dataset, batch_size=args["test"]["batch"], shuffle=False)
 
     model = BinaryMLP()
@@ -64,9 +78,12 @@ def main(args):
                       optim=optimizer,
                       num_classes=num_classes,
                       epochs=args["train"]["epochs"],
-                      device=device)
+                      device=device,
+                      checkpoint_dir="./checkpoints",
+                      save_best=True,
+                      early_stopping_patience=5)
 
-    model = trainer.fit(train_loader=train_loader)
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=5)
     predictions = trainer.predict(test_loader)
 
     model.eval()

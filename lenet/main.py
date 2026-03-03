@@ -49,11 +49,20 @@ def main(args):
         transform=train_transform
     )
 
-    test_dataset = datasets.CIFAR10(
+    # Get test set and split into validation (50%) and test (50%)
+    full_test_dataset = datasets.CIFAR10(
         root=args["dataset"]["dir"],
         train=False,
         download=True,
         transform=test_transform
+    )
+
+    # Split test set: 5000 val + 5000 test (from 10000 total)
+    val_size = 5000
+    test_size = len(full_test_dataset) - val_size
+    val_dataset, test_dataset = torch.utils.data.random_split(
+        full_test_dataset,
+        [val_size, test_size]
     )
     # ========================================
 
@@ -64,6 +73,15 @@ def main(args):
         pin_memory=True
     )
 
+    # Validation loader
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=args["test"]["batch"],
+        shuffle=False,
+        pin_memory=True
+    )
+
+    # Test loader (for final evaluation)
     test_loader = DataLoader(
         test_dataset,
         batch_size=args["test"]["batch"],
@@ -84,10 +102,14 @@ def main(args):
         loss_fn=loss_fn,
         optim=optimizer,
         epochs=args["train"]["epochs"],
-        device=device
+        num_classes=args["model"]["num_classes"],
+        device=device,
+        checkpoint_dir="./checkpoints",
+        save_best=True,
+        early_stopping_patience=5
     )
 
-    model = trainer.fit(train_loader=train_loader)
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=5)
 
     # ========================================
     # Evaluation

@@ -34,9 +34,8 @@ def main(args):
     path = kagglehub.dataset_download("harishkumardatalab/housing-price-prediction", output_dir=args["general"]["dataset_dir"])
     filename = "Housing.csv"
     df = pd.read_csv(os.path.join(path,filename))
-    
-    obj_cols = [] 
-    
+
+    obj_cols = []
     for col in df.columns:
         if df[col].dtype == "object":
             obj_cols.append(col)
@@ -48,26 +47,42 @@ def main(args):
 
     # ========================================
 
-    X_train, X_test, y_train, y_test = train_test_split(X,
+    # First split: 70% train, 30% temp (val + test)
+    X_train, X_temp, y_train, y_temp = train_test_split(X,
                                                         y,
-                                                        test_size=args["test"]["size"],
+                                                        test_size=0.3,
                                                         random_state=args["train"]["seed"])
 
+    # Second split: split temp into 50% val, 50% test (15% each of original)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp,
+                                                    y_temp,
+                                                    test_size=0.5,
+                                                    random_state=args["train"]["seed"])
+
+    # Normalize features using training statistics only
     X_standard_scaler = StandardScaler()
     X_train = X_standard_scaler.fit_transform(X_train)
+    X_val = X_standard_scaler.transform(X_val)
     X_test = X_standard_scaler.transform(X_test)
 
+    # Normalize targets using training statistics only
     y_standard_scaler = StandardScaler()
     y_train = y_standard_scaler.fit_transform(y_train.reshape(-1, 1))
+    y_val = y_standard_scaler.transform(y_val.reshape(-1, 1))
     y_test = y_standard_scaler.transform(y_test.reshape(-1, 1))
 
     y_train = y_train.squeeze() # [N, 1] -> [N,]
+    y_val = y_val.squeeze()
     y_test = y_test.squeeze()
 
     train_dataset = RegressionDataset(X_train, y_train)
+    val_dataset = RegressionDataset(X_val, y_val)
     test_dataset = RegressionDataset(X_test, y_test)
 
     train_loader = DataLoader(train_dataset, batch_size=args["train"]["batch"], shuffle=True)
+    # Validation set (used during training for early stopping)
+    val_loader = DataLoader(val_dataset, batch_size=args["test"]["batch"], shuffle=False)
+    # Test set (for final evaluation, never seen during training)
     test_loader = DataLoader(test_dataset, batch_size=args["test"]["batch"], shuffle=False)
 
     model = RegressionMLP()
@@ -79,9 +94,15 @@ def main(args):
                       loss_fn=loss_fn,
                       optim=optimizer,
                       epochs=args["train"]["epochs"],
-                      device=device)
+                      device=device,
+                      checkpoint_dir="./checkpoints",
+                      save_best=True,
+                      early_stopping_patience=5)
 
-    model = trainer.fit(train_loader=train_loader)
+    # Train with separate validation set
+    model = trainer.fit(train_loader=train_loader,
+                       val_loader=val_loader,
+                       val_epoch=5)
 
     predictions = []
     grounds = []

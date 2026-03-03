@@ -36,25 +36,39 @@ def main(args):
         "Iris-virginica": 2,
     }
     y = np.vectorize(label2id.get)(y).astype(np.int64)
-   
+
     # ========================================
-    
+
     num_classes = np.unique(y).shape[0]
-    
-    X_train, X_test, y_train, y_test = train_test_split(X,
+
+    # First split: 70% train, 30% temp (val + test)
+    X_train, X_temp, y_train, y_temp = train_test_split(X,
                                                         y,
-                                                        test_size=args["test"]["size"],
+                                                        test_size=0.3,
                                                         stratify=y,
                                                         random_state=args["train"]["seed"])
 
+    # Second split: split temp into 50% val, 50% test (15% each of original)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp,
+                                                     y_temp,
+                                                     test_size=0.5,
+                                                     stratify=y_temp,
+                                                     random_state=args["train"]["seed"])
+
+    # Normalize features using training statistics only
     standard_scaler = StandardScaler()
     X_train = standard_scaler.fit_transform(X_train)
+    X_val = standard_scaler.transform(X_val)
     X_test = standard_scaler.transform(X_test)
 
     train_dataset = MultiClassDataset(X_train, y_train)
+    val_dataset = MultiClassDataset(X_val, y_val)
     test_dataset = MultiClassDataset(X_test, y_test)
 
     train_loader = DataLoader(train_dataset, batch_size=args["train"]["batch"], shuffle=True)
+    # Validation loader (used during training for early stopping)
+    val_loader = DataLoader(val_dataset, batch_size=args["test"]["batch"], shuffle=False)
+    # Test loader (for final evaluation, never seen during training)
     test_loader = DataLoader(test_dataset, batch_size=args["test"]["batch"], shuffle=False)
 
     model = MultiClassMLP()
@@ -67,26 +81,15 @@ def main(args):
                       optim=optimizer,
                       num_classes=num_classes,
                       epochs=args["train"]["epochs"],
-                      device=device)
+                      device=device,
+                      checkpoint_dir="./checkpoints",
+                      save_best=True,
+                      early_stopping_patience=5)
 
-    model = trainer.fit(train_loader=train_loader)
+    model = trainer.fit(train_loader=train_loader, val_loader=val_loader, val_epoch=5)
     predictions = trainer.predict(test_loader)
     print(predictions)
     print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
-    #predictions = []
-    #grounds = []
-#
-    #model.eval()
-    #with torch.no_grad():
-    #    for data, labels in test_loader:
-    #        data = data.to(device)
-#
-    #        probs = model(data)
-    #        preds = torch.argmax(probs, axis=1)
-#
-    #        predictions.extend(preds.detach().cpu().tolist())
-#
-    #print(f"Accuracy: {accuracy_score(grounds, predictions):.4f}")
 
 if __name__ == "__main__":
     app.run()
