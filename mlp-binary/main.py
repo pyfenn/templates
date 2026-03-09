@@ -1,6 +1,7 @@
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.trainers import Trainer
+from fenn.nn import Checkpoint
+from fenn.nn import Trainer
 
 import torch
 import torch.nn as nn
@@ -73,20 +74,23 @@ def main(args):
     optimizer = optim.Adam(model.parameters(),
                             lr=float(args["train"]["lr"]))
 
+    checkpoint_config = Checkpoint(
+        name="iris_binary_mlp",
+        dir=args["checkpoint"]["save_dir"],
+        epochs=args["checkpoint"]["epochs"],
+        save_best=True
+    )
+
     trainer = Trainer(model=model,
                       loss_fn=loss_fn,
                       optim=optimizer,
                       num_classes=num_classes,
-                      epochs=args["train"]["epochs"],
                       device=device,
-                      checkpoint_dir="./checkpoints",
-                      save_best=True,
-                      early_stopping_patience=5)
+                      early_stopping_patience=5,
+                      checkpoint_config=checkpoint_config)
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader)
+    trainer.fit(train_loader=train_loader, epochs=args["train"]["epochs"], val_loader=val_loader)
     predictions = trainer.predict(test_loader)
-
-    model.eval()
 
     print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
 
