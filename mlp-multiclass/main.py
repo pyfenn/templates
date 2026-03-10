@@ -1,6 +1,6 @@
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.trainers import Trainer
+from fenn.nn import ClassificationTrainer as Trainer
 
 import torch
 import torch.nn as nn
@@ -80,11 +80,9 @@ def main(args):
                       loss_fn=loss_fn,
                       optim=optimizer,
                       num_classes=num_classes,
-                      epochs=args["train"]["epochs"],
-                      device=device,
-                      early_stopping_patience=2)
+                      device=device)
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader)
+    model = trainer.fit(train_loader=train_loader, epochs=args["train"]["epochs"], val_loader=val_loader)
     predictions = trainer.predict(test_loader)
 
     print(f"Accuracy: {accuracy_score(y_test, predictions):.4f}")
