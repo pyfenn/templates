@@ -1,6 +1,6 @@
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.trainers import Trainer
+from fenn.nn import RegressionTrainer as Trainer
 
 import torch
 import torch.nn as nn
@@ -47,16 +47,14 @@ def main(args):
 
     # ========================================
 
-    # First split: 70% train, 30% temp (val + test)
-    X_train, X_temp, y_train, y_temp = train_test_split(X,
+    X_train, X_test, y_train, y_test = train_test_split(X,
                                                         y,
-                                                        test_size=0.3,
+                                                        test_size=args["test"]["size"],
                                                         random_state=args["train"]["seed"])
 
-    # Second split: split temp into 50% val, 50% test (15% each of original)
-    X_val, X_test, y_val, y_test = train_test_split(X_temp,
-                                                    y_temp,
-                                                    test_size=0.5,
+    X_train, X_val, y_train, y_val = train_test_split(X_train,
+                                                    y_train,
+                                                    test_size=args["val"]["size"],
                                                     random_state=args["train"]["seed"])
 
     # Normalize features using training statistics only
@@ -93,33 +91,16 @@ def main(args):
     trainer = Trainer(model=model,
                       loss_fn=loss_fn,
                       optim=optimizer,
-                      epochs=args["train"]["epochs"],
-                      device=device,
-                      checkpoint_dir="./checkpoints",
-                      save_best=True,
-                      early_stopping_patience=5)
+                      device=device)
 
-    # Train with separate validation set
-    model = trainer.fit(train_loader=train_loader,
+    trainer.fit(train_loader=train_loader, epochs=args["train"]["epochs"],
                        val_loader=val_loader)
 
-    predictions = []
-    grounds = []
+    predictions = trainer.predict(test_loader)
 
-    model.eval()
-
-    with torch.no_grad():
-        for data, labels in test_loader:
-            data = data.to(device)
-
-            logits = model(data).squeeze(1)     # [B,1] -> [B]
-
-            predictions.extend(logits.detach().cpu().tolist())
-            grounds.extend(labels.detach().cpu().tolist())
-
-    print(f"R2: {r2_score(grounds, predictions):.2f}")
-    print(f"MSE: {mean_squared_error(grounds, predictions):.2f}")
-    print(f"MAE: {mean_absolute_error(grounds, predictions):.2f}")
+    print(f"R2: {r2_score(y_true=y_test, y_pred=predictions):.2f}")
+    print(f"MSE: {mean_squared_error(y_true=y_test, y_pred=predictions):.2f}")
+    print(f"MAE: {mean_absolute_error(y_true=y_test, y_pred=predictions):.2f}")
 
 if __name__ == "__main__":
     app.run()

@@ -18,8 +18,11 @@ train:
   seed: 42
   batch: 16
   epochs: 40
-  lr: 1e-3
+  lr: 1e-2
 
 test:
   size: 0.2
   batch: 16
+
+val:
+  size: 0.1
