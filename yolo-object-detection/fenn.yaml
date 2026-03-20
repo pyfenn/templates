@@ -1,0 +1,31 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: yolo-object-detection
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# User Section
+# ---------------------------------------
+general:
+  device: cuda
+
+model:
+  weights: yolov8n.pt
+
+data:
+  dataset_yaml: coco8.yaml
+
+train:
+  seed: 42
+  batch: 16
+  epochs: 50
+  imgsz: 640
+  verbose: False
+
+checkpoint:
+  save_dir: ./models
+  epochs: 5
