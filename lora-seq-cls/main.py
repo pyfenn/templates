@@ -29,8 +29,8 @@ def main(args):
     # We use "validation" as the held-out test set.
     raw = load_dataset("sst2")
 
-    train_texts  = raw["train"]["sentence"]#[:2000]
-    train_labels = raw["train"]["label"]#[:2000]
+    train_texts  = raw["train"]["sentence"][:2000]
+    train_labels = raw["train"]["label"][:2000]
 
     test_texts  = raw["validation"]["sentence"]
     test_labels = raw["validation"]["label"]
