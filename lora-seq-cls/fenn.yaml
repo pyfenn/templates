@@ -1,0 +1,33 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: lora-seq-cls
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# User Section
+# ---------------------------------------
+general:
+  device: cuda
+
+train:
+  seed: 42
+  batch: 16
+  epochs: 3
+  lr: 2e-4
+
+test:
+  batch: 32
+
+model:
+  name: distilbert-base-uncased
+  max_length: 128
+  num_labels: 2
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.1
