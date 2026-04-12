@@ -1,0 +1,33 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: timm-cls
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# User Section
+# ---------------------------------------
+general:
+  device: cuda
+
+dataset:
+  dir: ./data   # CIFAR-10 is downloaded here on first run
+
+model:
+  name: resnet18          # any timm model — see timm.list_models()
+  pretrained: true
+  freeze_backbone: true   # true = head-only fine-tuning, false = full fine-tuning
+  num_classes: 10         # 10 for CIFAR-10
+
+train:
+  seed: 42
+  batch: 64
+  epochs: 5
+  lr: 1e-3
+  weight_decay: 1e-4
+
+test:
+  batch: 128

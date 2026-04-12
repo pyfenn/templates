@@ -1,0 +1,38 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: lstm-gen
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# User Section
+# ---------------------------------------
+general:
+  device: cuda
+
+data:
+  seq_len: 128   # characters per training sequence (context window)
+
+train:
+  seed: 42
+  batch: 128
+  epochs: 10
+  lr: 3e-3
+
+test:
+  size: 0.1    # fraction of sequences held out for validation
+  batch: 256
+
+model:
+  embed_dim: 64    # character embedding size
+  hidden_dim: 256  # LSTM hidden units per layer
+  num_layers: 2    # stacked LSTM layers
+  dropout: 0.3
+
+generate:
+  prompt: "ROMEO:"         # seed text for generation
+  max_new_tokens: 500      # characters to generate after the prompt
+  temperature: 0.8         # 0 = greedy, 1 = unscaled, >1 = creative/noisy

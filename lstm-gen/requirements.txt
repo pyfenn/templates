@@ -1,0 +1,3 @@
+fenn
+fenn[torch]
+huggingface_hub

@@ -1,0 +1,36 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: lstm-seq-cls
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# User Section
+# ---------------------------------------
+general:
+  device: cuda
+
+data:
+  seq_len: 100   # timesteps per sequence
+  features: 3    # accelerometer axes (X, Y, Z)
+
+train:
+  seed: 42
+  batch: 64
+  epochs: 20
+  lr: 1e-3
+
+test:
+  size: 0.2
+  batch: 128
+
+model:
+  hidden_dim: 128
+  num_layers: 2
+  num_classes: 6
+  dropout: 0.3
+  bidirectional: true
+  pooling: last   # last | mean | max

@@ -1,0 +1,4 @@
+fenn
+fenn[torch]
+huggingface_hub
+scikit-learn
