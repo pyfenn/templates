@@ -1,0 +1,23 @@
+# ---------------------------------------
+# Fenn Configuration (Modify Carefully)
+# ---------------------------------------
+
+project: rag
+
+# ---------------------------
+# Logging & Tracking
+# ---------------------------
+
+logger:
+  dir: logger
+
+# ---------------------------------------
+# Example of User Section
+# ---------------------------------------
+
+rag:
+  provider: openrouter
+  model: openai/gpt-oss-120b:free
+
+train:
+    lr: 0.001
