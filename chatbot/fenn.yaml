@@ -2,7 +2,7 @@
 # Fenn Configuration (Modify Carefully)
 # ---------------------------------------
 
-project: rag
+project: chatbot
 
 # ---------------------------
 # Logging & Tracking
@@ -11,13 +11,19 @@ project: rag
 logger:
   dir: logger
 
-# ---------------------------------------
-# Example of User Section
-# ---------------------------------------
+# ---------------------------
+# LLM Provider
+# ---------------------------
 
-rag:
+llm:
   provider: openrouter
   model: openai/gpt-oss-120b:free
 
-train:
-    lr: 0.001
+# ---------------------------
+# RAG Settings
+# ---------------------------
+
+rag:
+  top_k: 5
+  chunk_mode: smart
+  knowledge_dir: knowledge
