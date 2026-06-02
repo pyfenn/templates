@@ -8,7 +8,7 @@ This template demonstrates how to:
 - Define a CNN architecture with batch normalization and dropout
 - Set up training with the FENN framework
 - Evaluate model performance
-- Use the FENN Trainer class for training management
+- Use the FENN ClassificationTrainer class for training management
 
 ## Architecture
 
@@ -100,19 +100,20 @@ You can modify the trainer parameters in the basic training code:
 
 ```python
 # For more patience before stopping (wait 10 epochs without improvement)
-trainer = Trainer(
+trainer = ClassificationTrainer(
     ...,
     early_stopping_patience=10
 )
 
 # Validation is performed every epoch when a validation loader is provided
-trained_model = trainer.fit(
-  train_loader=train_loader,
-  val_loader=test_loader,
+trainer.fit(
+    train_loader=train_loader,
+    epochs=args["train"]["epochs"],
+    val_loader=test_loader,
 )
 
 # To disable early stopping
-trainer = Trainer(
+trainer = ClassificationTrainer(
     ...,
     early_stopping_patience=None  # No early stopping
 )

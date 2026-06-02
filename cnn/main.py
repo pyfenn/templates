@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from fenn import Fenn
 from fenn.utils import set_seed
-from fenn.nn.trainers import Trainer
+from fenn.nn import Checkpoint, ClassificationTrainer
 
 from modules import LeNet
 
@@ -97,36 +97,27 @@ def main(args):
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=float(args["train"]["lr"]))
 
-    trainer = Trainer(
+    trainer = ClassificationTrainer(
         model=model,
         loss_fn=loss_fn,
         optim=optimizer,
-        epochs=args["train"]["epochs"],
         num_classes=args["model"]["num_classes"],
         device=device,
-        checkpoint_dir="./checkpoints",
-        save_best=True,
-        early_stopping_patience=5
+        checkpoint_config=Checkpoint(dir="./checkpoints", save_best=True),
+        early_stopping_patience=5,
     )
 
-    model = trainer.fit(train_loader=train_loader, val_loader=val_loader)
+    trainer.fit(
+        train_loader=train_loader,
+        epochs=args["train"]["epochs"],
+        val_loader=val_loader,
+    )
 
     # ========================================
     # Evaluation
     # ========================================
-    predictions = []
-    grounds = []
-    model.to(device)
-    model.eval()
-    with torch.no_grad():
-        for images, labels in test_loader:
-            images = images.to(device)
-
-            outputs = model(images)
-            preds = torch.argmax(outputs, dim=1)
-
-            predictions.extend(preds.detach().cpu().tolist())
-            grounds.extend(labels.detach().cpu().tolist())
+    predictions = trainer.predict(test_loader)
+    grounds = [label for _, labels in test_loader for label in labels.tolist()]
 
     print(f"Accuracy: {accuracy_score(grounds, predictions):.4f}")
 
