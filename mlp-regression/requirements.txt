@@ -1,3 +1,5 @@
 ucimlrepo
 fenn
 fenn[torch]
+kagglehub==1.0.0
+kagglesdk
