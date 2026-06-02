@@ -39,8 +39,10 @@ def main(args):
     for col in df.columns:
         if df[col].dtype == "object":
             obj_cols.append(col)
-
-    df = pd.get_dummies(df, columns=obj_cols).astype(int) # one-hot encoding of object features
+    
+    df = df.replace({"yes": 1, "no": 0})
+    obj_cols = df.select_dtypes(include=["object"]).columns
+    df = pd.get_dummies(df, columns=obj_cols) # one-hot encoding of object features
 
     X = df.drop(columns=["price"]).values
     y = df["price"].values
