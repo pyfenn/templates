@@ -2,6 +2,7 @@ __pycache__/
 logger/
 dataset/
 data/
+profiling/results/
 #Ignore vscode AI rules
 .*/
 .*
